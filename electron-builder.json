@@ -1,0 +1,59 @@
+{
+  "asar": false,
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    {
+      "from": "dist/browser",
+      "to": "../"
+    },
+    {
+      "from": "app",
+      "to": "app"
+    },
+    "!node_modules/**/*",
+    "package.json",
+    "!**/*.ts",
+    "!**/*.map",
+    "!src/",
+    "!angular.json",
+    "!tsconfig*.json",
+    "!*.md"
+  ],
+  "protocols": [
+    {
+      "name": "gerenciador-testes Protocol",
+      "schemes": [
+        "gerenciador-testes"
+      ]
+    }
+  ],
+  "win": {
+    "icon": "dist/assets/icons",
+    "target": [
+      "nsis"
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "runAfterFinish": true
+  },
+  "portable": {
+    "splashImage": "dist/assets/icons/electron.bmp"
+  },
+  "mac": {
+    "icon": "dist/assets/icons",
+    "target": [
+      "dmg"
+    ]
+  },
+  "linux": {
+    "icon": "dist/assets/icons",
+    "target": [
+      "AppImage"
+    ]
+  }
+}

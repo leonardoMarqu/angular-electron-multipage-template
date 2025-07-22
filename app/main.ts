@@ -2,25 +2,56 @@ import { app } from 'electron'
 import MultiWindowBrowserService from './services/multiWindowService'
 import * as path from 'path'
 
+// Singleton instance of the window management service
 const windowService = MultiWindowBrowserService.getInstance()
 
+// Checks if running in development mode (--serve)
+const args = process.argv.slice(1)
+const serve = args.some(val => val === '--serve');
+
+// When Electron is ready, creates the main window
 app.on('ready', () => {
+    // Creates a window group called 'main' with a limit of 1 window
     windowService.createGroup('main', 1, true)
-    windowService.createWindow('main', 'main1', {
-        width: 800,
-        height: 600,
-        type: 'url',
-        url: 'http://localhost:4200',
-        openDevTools: true,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'), // Caminho absoluto!
-            contextIsolation: true,
-            nodeIntegration: false
-        }
-    })
+
+    if (serve) {
+        // Development mode: loads from Angular server (localhost:4200)
+        windowService.createWindow('main', 'main1', {
+            width: 800,
+            height: 600,
+            type: 'url',
+            url: 'http://localhost:4200',
+            openDevTools: true, // Opens DevTools automatically in dev
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'), // Preload script for IPC
+                contextIsolation: true, // Security: isolates preload context
+                nodeIntegration: false // Security: disables Node.js in renderer
+            }
+        })
+    }
+    else {
+        // Production mode: loads from built HTML file
+        const path = require('path');
+        const indexPath = path.join(__dirname, '../../index.html'); // Path to the built index.html
+
+        windowService.createWindow('main', 'main1', {
+            width: 800,
+            height: 600,
+            type: 'file',
+            file: indexPath,
+            openDevTools: true, // Can remove in production if desired
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: true,
+                nodeIntegration: false
+            }
+        })
+    }
 })
 
+// When all windows are closed
 app.on('window-all-closed', () => {
+    // On macOS, apps usually stay active even without windows
     if (process.platform !== 'darwin') {
         console.log('App quit')
         app.quit()
@@ -28,5 +59,43 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
+    // If no windows are open, recreates the main window (default macOS behavior)
+    if (windowService.getWindowByName('main1') === undefined) {
+        // Creates a window group called 'main' with a limit of 1 window
+        windowService.createGroup('main', 1, true)
 
+        if (serve) {
+            // Development mode: loads from Angular server (localhost:4200)
+            windowService.createWindow('main', 'main1', {
+                width: 800,
+                height: 600,
+                type: 'url',
+                url: 'http://localhost:4200',
+                openDevTools: true, // Opens DevTools automatically in dev
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js'), // Preload script for IPC
+                    contextIsolation: true, // Security: isolates preload context
+                    nodeIntegration: false // Security: disables Node.js in renderer
+                }
+            })
+        }
+        else {
+            // Production mode: loads from built HTML file
+            const path = require('path');
+            const indexPath = path.join(__dirname, '../../index.html'); // Path to the built index.html
+
+            windowService.createWindow('main', 'main1', {
+                width: 800,
+                height: 600,
+                type: 'file',
+                file: indexPath,
+                openDevTools: true, // Can remove in production if desired
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js'),
+                    contextIsolation: true,
+                    nodeIntegration: false
+                }
+            })
+        }
+    }
 })

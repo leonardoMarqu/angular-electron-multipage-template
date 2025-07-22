@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "target": "es2015",
+    "sourceMap": true, // Generates source map files to facilitate debugging
+    "declaration": false, // Does not generate .d.ts (type declaration) files
+    "moduleResolution": "node", // Resolves modules using Node.js style
+    "emitDecoratorMetadata": true, // Required for some frameworks that use decorators
+    "experimentalDecorators": true, // Allows the use of decorators (e.g., @Injectable)
+    "module": "commonjs", // Generates modules in CommonJS format (used by Node/Electron)
+    "target": "es2015", // Transpiles to ES2015 (compatible with Electron)
     "types": [
-      "node"
+      "node" // Includes Node.js types
     ],
     "lib": [
       "es2017",
@@ -18,8 +18,8 @@
     ]
   },
   "files": [
-    "app/main.ts",
-    "app/preload.ts"
+    "app/main.ts",    // Main Electron file (main process)
+    "app/preload.ts"  // Electron preload script (exposed to the renderer)
   ],
   "exclude": [
     "node_modules",
